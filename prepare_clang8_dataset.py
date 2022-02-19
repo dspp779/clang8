@@ -162,7 +162,7 @@ def _prepare_clang8(language: str, clang8_targets_dir: str, lang8_dir: str,
     model_path = 'ru_core_news_sm'
   else:
     raise ValueError(f'Unsupported language: {language}')
-  disabled_components = ['lemmatizer', 'parser', 'tagger', 'ner']
+  excluded_components = ['tok2vec', 'tagger', 'parser', 'attribute_ruler', 'lemmatizer', 'ner']
 
   clang8_targets_path = os.path.join(clang8_targets_dir,
                                      f'clang8_{language}.detokenized.tsv')
@@ -170,7 +170,7 @@ def _prepare_clang8(language: str, clang8_targets_dir: str, lang8_dir: str,
                                                           lang8_dir)
   tokenization_label = ''
   if tokenize_text:
-    nlp = spacy.load(model_path, disable=disabled_components)
+    nlp = spacy.load(model_path, exclude=excluded_components)
     tokenization_label = '.spacy_tokenized'
     source_target_pairs = _tokenize(source_target_pairs, nlp)
   output_path = os.path.join(
