@@ -77,8 +77,8 @@ def _read_clang8_targets(
   """
   ids_2_targets = collections.defaultdict(list)
   with open(path) as f:
-    for line in f:
-      journal_id, sentence_id, sentence_number, _, target = line.rstrip('\n').split('\t')
+    for line in f.read().splitlines():
+      journal_id, sentence_id, sentence_number, _, target = line.split('\t')
       ids_2_targets[journal_id, sentence_id].append((sentence_number, target))
   num_targets = sum(len(targets) for targets in ids_2_targets.values())
   print(f'{num_targets} cLang-8 targets read.')
