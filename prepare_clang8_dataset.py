@@ -7,17 +7,17 @@ https://docs.google.com/forms/d/17gZZsC_rnaACMXmPiab3kjqBEtRHPMz0UG9Dk-x_F0k/vie
 and provide the download directory path via the `lang8_dir` flag.
 """
 
-import collections
+from collections import defaultdict
+from typing import Iterable, Iterator, List, Mapping, Sequence, Tuple
 import json
 import os
 
-from typing import Iterable, Iterator, List, Mapping, Sequence, Tuple
+from tqdm import tqdm
+import spacy
 
 from absl import app
 from absl import flags
 
-import spacy
-import tqdm
 
 FLAGS = flags.FLAGS
 
@@ -75,7 +75,7 @@ def _read_clang8_targets(
       (sentence_number, target) where sentence_number is the learner sentence
       index.
   """
-  ids_2_targets = collections.defaultdict(list)
+  ids_2_targets = defaultdict(list)
   with open(path) as f:
     for line in f.read().splitlines():
       journal_id, sentence_id, sentence_number, _, target = line.split('\t')
@@ -98,7 +98,7 @@ def _yield_clang8_source_target_pairs(
       following version of it: lang-8-20111007-L1-v2.dat
   """
   ids_2_targets, num_targets = _read_clang8_targets(clang8_path)
-  with tqdm.tqdm(total=num_targets) as progress_bar:
+  with tqdm(total=num_targets) as progress_bar:
     for journal_id, sentence_id, *_, sources, _ in _yield_lang8_raw_dicts(lang8_raw_dir):
       lang8_raw_ids = (int(journal_id), int(sentence_id))
       for sentence_number, target in ids_2_targets.get(lang8_raw_ids, ()):
@@ -128,7 +128,7 @@ def _tokenize(pairs: Iterable[Tuple[str, str]],
   print('Tokenizing...')
   source_docs = nlp.pipe([pair[0] for pair in pairs], batch_size=batch_size)
   target_docs = nlp.pipe([pair[1] for pair in pairs], batch_size=batch_size)
-  with tqdm.tqdm(total=len(pairs)) as progress_bar:
+  with tqdm(total=len(pairs)) as progress_bar:
     for source, target in zip(source_docs, target_docs):
       source_tokenized = ' '.join([token.text for token in source])
       target_tokenized = ' '.join([token.text for token in target])
