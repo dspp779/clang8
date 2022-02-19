@@ -128,12 +128,10 @@ def _tokenize(pairs: Iterable[Tuple[str, str]],
   print('Tokenizing...')
   source_docs = nlp.pipe([pair[0] for pair in pairs], batch_size=batch_size)
   target_docs = nlp.pipe([pair[1] for pair in pairs], batch_size=batch_size)
-  with tqdm(total=len(pairs)) as progress_bar:
-    for source, target in zip(source_docs, target_docs):
-      source_tokenized = ' '.join([token.text for token in source])
-      target_tokenized = ' '.join([token.text for token in target])
-      yield source_tokenized, target_tokenized
-      progress_bar.update(1)
+  for source, target in tqdm(zip(source_docs, target_docs), total=len(pairs)):
+    source_tokenized = ' '.join(token.text for token in source)
+    target_tokenized = ' '.join(token.text for token in target)
+    yield source_tokenized, target_tokenized
 
 
 def _clean_spaces(text):
