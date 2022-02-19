@@ -79,10 +79,8 @@ def _read_clang8_targets(
   num_targets = 0
   with open(path) as f:
     for line in f:
-      (journal_id, sentence_id, sentence_number, has_correction,
-       target) = line.rstrip('\n').split('\t')
-      del has_correction
-      ids_2_targets[(journal_id, sentence_id)].append((sentence_number, target))
+      journal_id, sentence_id, sentence_number, _, target = line.rstrip('\n').split('\t')
+      ids_2_targets[journal_id, sentence_id].append((sentence_number, target))
       num_targets += 1
   print(f'{num_targets} cLang-8 targets read.')
   return ids_2_targets, num_targets
