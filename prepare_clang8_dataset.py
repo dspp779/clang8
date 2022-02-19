@@ -79,7 +79,7 @@ def _read_clang8_targets(
   with open(path) as f:
     for line in f.read().splitlines():
       journal_id, sentence_id, sentence_number, _, target = line.split('\t')
-      ids_2_targets[int(journal_id), int(sentence_id)].append((int(sentence_number), target))
+      ids_2_targets[journal_id, int(sentence_id)].append((int(sentence_number), target))
   num_targets = sum(len(targets) for targets in ids_2_targets.values())
   print(f'{num_targets} cLang-8 targets read.')
   return ids_2_targets, num_targets
@@ -100,7 +100,7 @@ def _yield_clang8_source_target_pairs(
   ids_2_targets, num_targets = _read_clang8_targets(clang8_path)
   with tqdm(total=num_targets) as progress_bar:
     for journal_id, sentence_id, *_, sources, _ in _yield_lang8_raw_dicts(lang8_raw_dir):
-      lang8_raw_ids = (int(journal_id), int(sentence_id))
+      lang8_raw_ids = (journal_id, int(sentence_id))
       for sentence_number, target in ids_2_targets.get(lang8_raw_ids, ()):
         yield sources[sentence_number], target
         progress_bar.update(1)
