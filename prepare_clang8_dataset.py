@@ -100,11 +100,10 @@ def _yield_clang8_source_target_pairs(
   ids_2_targets, num_targets = _read_clang8_targets(clang8_path)
   num_combined = 0
   with tqdm.tqdm(total=num_targets) as progress_bar:
-    for row in _yield_lang8_raw_dicts(lang8_raw_dir):
-      lang8_raw_ids = (row[0], row[1])
-      for sentence_number, target in ids_2_targets.get(lang8_raw_ids, []):
-        source = row[4][int(sentence_number)]
-        yield source, target
+    for journal_id, sentence_id, *_, sources, _ in _yield_lang8_raw_dicts(lang8_raw_dir):
+      lang8_raw_ids = (int(journal_id), int(sentence_id))
+      for sentence_number, target in ids_2_targets.get(lang8_raw_ids, ()):
+        yield sources[sentence_number], target
         num_combined += 1
         progress_bar.update(1)
   print(f'{num_combined} sources mapped to cLang-8 targets.')
